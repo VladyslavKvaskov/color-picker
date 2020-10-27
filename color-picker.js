@@ -7,11 +7,11 @@ if (typeof colorPickerCss === 'undefined') {
       position: absolute;
       top: -9px;
       left: -9px;
-      border: 2px solid #fff;
       border-radius: 50%;
-      background: #000;
       transition: none;
       box-sizing: border-box;
+      border: 1px solid #000;
+      background: #ffd86f;
     }
 
     range-slider{
@@ -19,7 +19,8 @@ if (typeof colorPickerCss === 'undefined') {
       height: 9px;
       border-radius: 5px;
       width: 100%;
-      border: 1px solid #000;
+      background: linear-gradient(40deg,#ffd86f,#fc6262);
+      border: none;
     }
 
     color-picker{
@@ -481,6 +482,8 @@ if (typeof RangeSlider === 'undefined') {
     #pageXY;
     constructor() {
       super();
+    }
+    connectedCallback() {
 
       this.innerHTML = '<div class="draggable-controller"></div>';
       this.#shiftX;
@@ -628,8 +631,6 @@ if (typeof RangeSlider === 'undefined') {
           passive: false
         });
       }
-    }
-    connectedCallback() {
       if (window.getComputedStyle(this.#dragger, null).getPropertyValue('position') === 'static' || !window.getComputedStyle(this.#dragger, null).getPropertyValue('position')) {
         this.#dragger.style.position = 'absolute';
       }
@@ -641,6 +642,9 @@ if (typeof RangeSlider === 'undefined') {
         this.#dragger.style.transform = 'translateX(-50%)';
         this.#dragger.style.left = '50%';
       }
+
+
+
     }
   }
 
