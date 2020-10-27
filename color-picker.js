@@ -621,6 +621,11 @@ if (typeof RangeSlider === 'undefined') {
           this.#dragging(e);
         });
 
+        this.addEventListener('touchstart', (e) => {
+          this.#canDrag = true;
+          this.#dragging(e);
+        });
+
         document.addEventListener('mousemove', (e) => {
           this.#dragging(e);
         });
