@@ -1,12 +1,5 @@
 if (typeof colorPickerCss === 'undefined') {
   const colorPickerCss = `
-    :root{
-      --cp-current-color: rgba(0, 0, 0, 1);
-      --cp-corner-color: rgba(0, 0, 0, 1);
-      --cp-color-transparency: 1;
-      --cp-color-range-slider: 255, 0, 0;
-      --cp-active-color: rgba(0, 0, 0, 1);
-    }
     range-slider .draggable-controller{
       display: inline-block;
       width: 18px;
@@ -263,6 +256,7 @@ if (typeof ColorPicker === 'undefined') {
     #imageData;
     #selectColorBttn;
     #activeColor;
+    #cpId;
 
     constructor() {
       super();
@@ -272,7 +266,6 @@ if (typeof ColorPicker === 'undefined') {
       this.#A = 1;
       this.value = 'rgba(0, 0, 0, 1)';
       this.futureValue = 'rgba(0, 0, 0, 1)';
-      //linear-gradient(90deg, rgb(255, 0, 0), rgb(255, 255, 0), rgb(0, 255, 0), rgb(0, 255, 255), rgb(0, 0, 255), rgb(255, 0, 255), rgb(255, 0, 0));
       this.#gradient = [
         [0, [255, 0, 0]],
         [100 / 6, [255, 255, 0]],
@@ -286,7 +279,35 @@ if (typeof ColorPicker === 'undefined') {
 
     connectedCallback() {
       colorPickerInitCounter++;
-      this.classList.add(`color-picker-${colorPickerInitCounter}`);
+      this.#cpId = colorPickerInitCounter;
+
+      const colorPickerUniqueStyle = document.createElement('style');
+      colorPickerUniqueStyle.textContent = `
+      :root{
+        --cp-current-color-${this.#cpId}: rgba(0, 0, 0, 1);
+        --cp-color-transparency-${this.#cpId}: 1;
+        --cp-color-range-slider-${this.#cpId}: 255, 0, 0;
+        --cp-active-color-${this.#cpId}: rgba(0, 0, 0, 1);
+      }
+      color-picker.cp-${this.#cpId} .cp-init-button{
+        background-color: var(--cp-current-color-${this.#cpId});
+      }
+      color-picker.cp-${this.#cpId} .cp-color-palette{
+        background: linear-gradient(to top, rgba(0, 0, 0, var(--cp-color-transparency-${this.#cpId})), transparent), linear-gradient(to left, rgba(var(--cp-color-range-slider-${this.#cpId}), var(--cp-color-transparency-${this.#cpId})), rgba(255, 255, 255, var(--cp-color-transparency-${this.#cpId})));
+      }
+      color-picker.cp-${this.#cpId} .cp-color-palette .draggable-controller{
+        background: var(--cp-active-color-${this.#cpId});
+      }
+      color-picker.cp-${this.#cpId} .cp-colors .draggable-controller{
+        background: rgb(var(--cp-color-range-slider-${this.#cpId}));
+      }
+      color-picker.cp-${this.#cpId} .cp-active-color{
+        background: var(--cp-active-color-${this.#cpId});
+      }
+      `;
+      document.head.appendChild(colorPickerUniqueStyle);
+
+      this.classList.add(`cp-${this.#cpId}`);
       this.innerHTML = `
         <button type="button" class="cp-init-button"></button>
         <div class="cp-app">
@@ -313,8 +334,7 @@ if (typeof ColorPicker === 'undefined') {
       this.#canvasPalleteContext = this.#canvasPallete.getContext('2d');
 
       this.#setCanvas = () => {
-        document.documentElement.style.setProperty('--cp-corner-color', `rgba(${this.#R}, ${this.#G}, ${this.#B}, ${this.#A})`);
-        document.documentElement.style.setProperty('--cp-color-transparency', this.#A);
+        document.documentElement.style.setProperty(`--cp-color-transparency-${this.#cpId}`, this.#A);
 
         this.#canvasPallete.width = this.#cpPalletteSlider.offsetWidth;
         this.#canvasPallete.height = this.#cpPalletteSlider.offsetHeight;
@@ -352,11 +372,11 @@ if (typeof ColorPicker === 'undefined') {
 
       this.#cpPalletteSlider.addEventListener('input', () => {
         this.#setCanvas();
-        document.documentElement.style.setProperty('--cp-active-color', `rgba(${this.#getPixelColorFromCanvas({
+        document.documentElement.style.setProperty(`--cp-active-color-${this.#cpId}`, `rgba(${this.#getPixelColorFromCanvas({
           x: this.#cpPalletteSlider.value.x,
           y: this.#cpPalletteSlider.value.y
         }).join()})`);
-        this.futureValue = getComputedStyle(document.documentElement).getPropertyValue('--cp-active-color');
+        this.futureValue = getComputedStyle(document.documentElement).getPropertyValue(`--cp-active-color-${this.#cpId}`);
         this.dispatchEvent(cpColorPickingEvent);
       });
 
@@ -386,14 +406,14 @@ if (typeof ColorPicker === 'undefined') {
         this.#R = this.#rgbColor[0];
         this.#G = this.#rgbColor[1];
         this.#B = this.#rgbColor[2];
-        document.documentElement.style.setProperty('--cp-color-range-slider', this.#rgbColor.join());
+        document.documentElement.style.setProperty(`--cp-color-range-slider-${this.#cpId}`, this.#rgbColor.join());
 
         this.#setCanvas();
-        document.documentElement.style.setProperty('--cp-active-color', `rgba(${this.#getPixelColorFromCanvas({
+        document.documentElement.style.setProperty(`--cp-active-color-${this.#cpId}`, `rgba(${this.#getPixelColorFromCanvas({
           x: this.#cpPalletteSlider.value.x,
           y: this.#cpPalletteSlider.value.y
         }).join()})`);
-        this.futureValue = getComputedStyle(document.documentElement).getPropertyValue('--cp-active-color');
+        this.futureValue = getComputedStyle(document.documentElement).getPropertyValue(`--cp-active-color-${this.#cpId}`);
         this.dispatchEvent(cpColorPickingEvent);
       });
 
@@ -401,18 +421,18 @@ if (typeof ColorPicker === 'undefined') {
         this.#A = this.#opacitySlider.value.x / 100;
         this.#opacitySlider.querySelector('.draggable-controller').style.backgroundColor = `rgba(0, 0, 0, ${this.#A})`;
         this.#setCanvas();
-        document.documentElement.style.setProperty('--cp-active-color', `rgba(${this.#getPixelColorFromCanvas({
+        document.documentElement.style.setProperty(`--cp-active-color-${this.#cpId}`, `rgba(${this.#getPixelColorFromCanvas({
           x: this.#cpPalletteSlider.value.x,
           y: this.#cpPalletteSlider.value.y
         }).join()})`);
-        this.futureValue = getComputedStyle(document.documentElement).getPropertyValue('--cp-active-color');
+        this.futureValue = getComputedStyle(document.documentElement).getPropertyValue(`--cp-active-color-${this.#cpId}`);
         this.dispatchEvent(cpColorPickingEvent);
       });
 
       this.#selectColorBttn.addEventListener('click', () => {
-        this.#activeColor = getComputedStyle(document.documentElement).getPropertyValue('--cp-active-color');
+        this.#activeColor = getComputedStyle(document.documentElement).getPropertyValue(`--cp-active-color-${this.#cpId}`);
         this.value = this.#activeColor;
-        document.documentElement.style.setProperty('--cp-current-color', this.#activeColor);
+        document.documentElement.style.setProperty(`--cp-current-color-${this.#cpId}`, this.#activeColor);
         this.querySelector('.cp-app').classList.remove('cp-app-show');
         this.dispatchEvent(cpColorPickedEvent);
       });
@@ -464,7 +484,6 @@ if (typeof RangeSlider === 'undefined') {
     #dragging;
     #controllerForBounds;
     #pageXY;
-    // #controllerFor;
     constructor() {
       super();
 
@@ -477,7 +496,6 @@ if (typeof RangeSlider === 'undefined') {
       this.#percentY = null;
       this.#hasBeenDragged = false;
       this.#canDrag = false;
-      // this.#controllerFor = document.querySelector(this.#dataset.dragBounds);
       this.value = {
         x: null,
         y: null
