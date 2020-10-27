@@ -65,6 +65,7 @@ if (typeof colorPickerCss === 'undefined') {
       padding-top: 0;
       display: flex;
       justify-content: flex-end;
+      background: #fff;
     }
 
     color-picker .cp-select-color-bttn{
@@ -103,6 +104,7 @@ if (typeof colorPickerCss === 'undefined') {
       transform: translateX(-50%);
       visibility: hidden;
       opacity: 0;
+      z-index: 100000;
     }
 
     color-picker .cp-app.cp-app-show{
@@ -165,6 +167,7 @@ if (typeof colorPickerCss === 'undefined') {
 
     color-picker .cp-body{
       padding: 10px;
+      background: #fff;
     }
     color-picker .cp-body-head{
       display: flex;
