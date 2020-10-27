@@ -23,12 +23,8 @@ if (typeof colorPickerCss === 'undefined') {
     }
 
     color-picker{
-      display: flex;
-      max-width: 300px;
-      width: 100%;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
+      display: inline-block;
+      width: fit-content;
       position: relative;
     }
     color-picker .cp-init-button{
@@ -85,7 +81,7 @@ if (typeof colorPickerCss === 'undefined') {
     }
 
     color-picker .cp-app{
-      width: 100%;
+      width: 300px;
       height: fit-content;
       box-shadow: 1px 1px 5px #ccc;
       border-radius: 3px;
@@ -93,8 +89,7 @@ if (typeof colorPickerCss === 'undefined') {
       transition: opacity 0.3s, visibility 0.3s;
       position: absolute;
       top: 100%;
-      left: 50%;
-      transform: translateX(-50%);
+      left: 0;
       visibility: hidden;
       opacity: 0;
       z-index: 100000;
