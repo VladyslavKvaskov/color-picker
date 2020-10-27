@@ -432,7 +432,7 @@ if (typeof ColorPicker === 'undefined') {
         this.dispatchEvent(cpColorPickedEvent);
       });
 
-      document.addEventListener('click', (e) => {
+      document.addEventListener('mousedown', (e) => {
         if (e.target.closest('.cp-app') !== this.querySelector('.cp-app') && e.target !== this.querySelector('.cp-init-button')) {
           this.querySelector('.cp-app').classList.remove('cp-app-show');
         }
