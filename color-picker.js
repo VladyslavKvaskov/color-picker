@@ -613,6 +613,11 @@ if (typeof RangeSlider === 'undefined') {
           }
         }
 
+        this.addEventListener('mousedown', (e) => {
+          this.#canDrag = true;
+          this.#dragging(e);
+        });
+
         document.addEventListener('mousemove', (e) => {
           this.#dragging(e);
         });
