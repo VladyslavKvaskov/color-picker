@@ -1,5 +1,6 @@
 if (typeof colorPickerCss === 'undefined') {
-  const colorPickerCss = `
+  const colorPickerCss = document.createElement('style');
+  colorPickerCss.textContent = `
     range-slider .draggable-controller{
       display: inline-block;
       width: 18px;
@@ -201,9 +202,7 @@ if (typeof colorPickerCss === 'undefined') {
     }
   `;
 
-  const colorPickerStyle = document.createElement('style');
-  colorPickerStyle.textContent = colorPickerCss;
-  document.head.appendChild(colorPickerStyle);
+  document.head.appendChild(colorPickerCss);
 }
 
 if (typeof ColorPicker === 'undefined') {
