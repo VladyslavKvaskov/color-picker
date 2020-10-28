@@ -29,7 +29,6 @@ if (typeof colorPickerCss === 'undefined') {
       position: relative;
     }
     color-picker .cp-init-button{
-      background-color: var(--cp-current-color);
       display: inline-block;
       min-width: 30px;
       min-height: 30px;
@@ -104,14 +103,12 @@ if (typeof colorPickerCss === 'undefined') {
     color-picker .cp-color-palette{
       width: 100%;
       height: 150px;
-      background: linear-gradient(to top, rgba(0, 0, 0, var(--cp-color-transparency)), transparent), linear-gradient(to left, rgba(var(--cp-color-range-slider), var(--cp-color-transparency)), rgba(255, 255, 255, var(--cp-color-transparency)));
       position: relative;
       border: none;
     }
 
     color-picker .cp-color-palette .draggable-controller{
       top: calc(100% - 9px);
-      background: var(--cp-active-color);
     }
 
     color-picker .draggable-controller{
@@ -130,10 +127,6 @@ if (typeof colorPickerCss === 'undefined') {
 
     color-picker .draggable-controller:active{
       box-shadow: 0 0 0 1px #000;
-    }
-
-    color-picker .cp-colors .draggable-controller{
-      background: rgb(var(--cp-color-range-slider));
     }
 
     color-picker .cp-opacity .draggable-controller{
@@ -168,7 +161,6 @@ if (typeof colorPickerCss === 'undefined') {
       border-radius: 50%;
       width: 30px;
       height: 30px;
-      background: var(--cp-active-color);
       position: relative;
       overflow: hidden;
     }
@@ -179,7 +171,7 @@ if (typeof colorPickerCss === 'undefined') {
       height: 100%;
       position: absolute;
       background-image: url('data:image/svg+xml;utf8, <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2 2"><path fill="white" d="M1,0H2V1H1V0ZM0,1H1V2H0V1Z"/><path fill="gray" d="M0,0H1V1H0V0ZM1,1H2V2H1V1Z"/></svg>');
-      z-index: -1;
+      z-index: -10;
       background-size: 7px;
       top: 0;
       left: 0;
@@ -298,7 +290,8 @@ if (typeof ColorPicker === 'undefined') {
         background: rgb(var(--cp-color-range-slider-${this.#cpId}));
       }
       color-picker.cp-${this.#cpId} .cp-active-color{
-        background: var(--cp-active-color-${this.#cpId});
+        background: linear-gradient(to top, var(--cp-active-color-${this.#cpId}), var(--cp-active-color-${this.#cpId})), url('data:image/svg+xml;utf8, <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2 2"><path fill="white" d="M1,0H2V1H1V0ZM0,1H1V2H0V1Z"/><path fill="gray" d="M0,0H1V1H0V0ZM1,1H2V2H1V1Z"/></svg>');
+        background-size: 100%, 5px;
       }
       `;
       document.head.appendChild(colorPickerUniqueStyle);
@@ -328,6 +321,21 @@ if (typeof ColorPicker === 'undefined') {
       this.#selectColorBttn = this.querySelector('.cp-select-color-bttn');
       this.#canvasPallete = document.createElement('canvas');
       this.#canvasPalleteContext = this.#canvasPallete.getContext('2d');
+
+      this.#cpPalletteSlider.value = {
+        x: 0,
+        y: 100
+      };
+
+      this.#colorsSlider.value = {
+        x: 0,
+        y: null
+      };
+
+      this.#opacitySlider.value = {
+        x: 100,
+        y: null
+      };
 
       this.#setCanvas = () => {
         document.documentElement.style.setProperty(`--cp-color-transparency-${this.#cpId}`, this.#A);
@@ -498,6 +506,7 @@ if (typeof RangeSlider === 'undefined') {
         x: null,
         y: null
       };
+
       this.#dragger = this.querySelector('.draggable-controller');
 
       if (this.#dragger) {
@@ -624,6 +633,8 @@ if (typeof RangeSlider === 'undefined') {
         this.addEventListener('touchstart', (e) => {
           this.#canDrag = true;
           this.#dragging(e);
+        }, {
+          passive: false
         });
 
         document.addEventListener('mousemove', (e) => {
